@@ -26,7 +26,7 @@ public struct SnapState: Equatable {
     }
     public var isCorner: Bool { horizontal != nil && vertical != nil }
 
-    static func plain(_ d: Direction) -> SnapState {
+    public static func plain(_ d: Direction) -> SnapState {
         d.isHorizontal ? SnapState(horizontal: AxisSnap(d, 0)) : SnapState(vertical: AxisSnap(d, 0))
     }
 }

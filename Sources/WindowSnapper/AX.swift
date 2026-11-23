@@ -136,6 +136,21 @@ enum AX {
         return element(hit, kAXWindowAttribute)
     }
 
+    /// Frames (AX coordinates) of the normal windows on screen right now, other than ours.
+    static func otherWindowFrames() -> [CGRect] {
+        let me = ProcessInfo.processInfo.processIdentifier
+        guard let info = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements],
+                                                    kCGNullWindowID) as? [[String: Any]] else { return [] }
+        return info.compactMap { w in
+            guard (w[kCGWindowLayer as String] as? Int) == 0,
+                  (w[kCGWindowOwnerPID as String] as? NSNumber)?.int32Value != me,
+                  (w[kCGWindowAlpha as String] as? Double ?? 1) > 0.05,
+                  let d = w[kCGWindowBounds as String] as? NSDictionary,
+                  let r = CGRect(dictionaryRepresentation: d), r.width >= 60, r.height >= 60 else { return nil }
+            return r
+        }
+    }
+
     // MARK: Coordinates (AX: top-left origin, y down. AppKit: bottom-left origin, y up.)
 
     private static var primaryHeight: CGFloat { NSScreen.screens.first?.frame.maxY ?? 0 }

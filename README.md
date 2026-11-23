@@ -37,6 +37,7 @@
 
 - **Keyboard snapping that cycles.** Press ⌥⌘ ← again and again: ½ → ⅓ → ¾ → ⅔ → the next display.
 - **Corners.** Tap two arrows quickly (like ↑ then →) for a quarter of the screen.
+- **Fill the gap.** If there's empty space between two windows, the first press stretches the window to fill it.
 - **Drag to snap.** Drag a window to an edge or corner. A smooth, springy preview shows where it'll land.
 - **Layouts.** Save where all your windows are (Desk, Home, Sunday…) and restore them with ⌥⌘1, ⌥⌘2…
 - **Browser-aware.** Chrome, Safari, Edge, Brave and Vivaldi windows are matched by their tabs, and missing windows are reopened with those tabs.
@@ -78,6 +79,8 @@ Keep pressing the same shortcut to cycle through sizes.
 | ⌥⌘ ↑ | Top ½ | ⅓ | ¾ | ⅔ | Display above |
 | ⌥⌘ ↓ | Bottom ½ | ⅓ | ¾ | ⅔ | Display below |
 | ⌥⌘ + right ⇧ | Maximize to the whole display (not macOS full screen) | | | | |
+
+**Fill the gap:** if there's empty space between the window and another window in the direction you press, the first press stretches the window across that gap until it meets the other window. Press again and the normal cycle starts at ½. This is handy for the empty middle of an ultrawide, or the space between a window across the top and one across the bottom.
 
 **Corners:** press two arrows at right angles within a quarter of a second. For example, ↑ then → puts the window in the top-right quarter. From there, → keeps cycling the width and ↑ keeps cycling the height, and the window stays in the corner. Press an opposite arrow to leave the corner.
 

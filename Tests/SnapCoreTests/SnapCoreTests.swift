@@ -218,6 +218,24 @@ final class GapFillTests: XCTestCase {
                        CGRect(x: 800, y: 539, width: 1256, height: 790))
     }
 
+    func testTallMonitorSlackBetweenChromeAndTeams() {
+        // Your tall monitor: Chrome on top, Teams at the bottom, Slack in between overlapping the
+        // top of Teams a little. Slack should fit exactly between them, not cover Teams.
+        let tall = CGRect(x: 3440, y: -1160, width: 1440, height: 3440)
+        let chrome = CGRect(x: 3440, y: -1130, width: 1440, height: 1137)   // ends at y 7
+        let teams = CGRect(x: 3440, y: 1143, width: 1440, height: 1137)     // starts at y 1143
+        let slack = CGRect(x: 3500, y: 300, width: 1300, height: 900)       // ends at y 1200 (over Teams)
+        XCTAssertEqual(GapFill.fill(slack, others: [chrome, teams], screen: tall),
+                       CGRect(x: 3440, y: 7, width: 1440, height: 1136))
+    }
+
+    func testWindowInsideOrBehindIsIgnored() {
+        // A small window sitting on top of ours (fully inside) doesn't shrink us.
+        let w = CGRect(x: 0, y: 600, width: 1000, height: 600)
+        let inside = CGRect(x: 300, y: 800, width: 300, height: 200)
+        XCTAssertEqual(GapFill.fill(w, others: [inside], screen: screen), screen)
+    }
+
     func testNothingToFill() {
         let full = screen
         XCTAssertNil(GapFill.fill(full, others: [], screen: screen))

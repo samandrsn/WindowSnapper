@@ -41,8 +41,8 @@ fi
 
 if [[ "$MODE" == "--release" ]]; then
   VERSION=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" Resources/Info.plist)
-  ZIP="build/WindowSnapper-$VERSION.zip"
+  ZIP="build/WindowSnapper.zip"   # same name every release, so the "latest" download link never changes
   rm -f "$ZIP"
   ditto -c -k --sequesterRsrc --keepParent "$APP" "$ZIP"
-  echo "Release zip: $ZIP"
+  echo "Release zip for version $VERSION: $ZIP"
 fi

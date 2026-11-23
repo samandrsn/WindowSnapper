@@ -12,7 +12,7 @@
 <p align="center">
   <img alt="macOS 13+" src="https://img.shields.io/badge/macOS-13%2B-black?logo=apple">
   <img alt="Swift" src="https://img.shields.io/badge/Swift-5.9-F05138?logo=swift&logoColor=white">
-  <img alt="Version 1.0" src="https://img.shields.io/badge/version-1.0-5B8CFF">
+  <img alt="Version 1.1" src="https://img.shields.io/badge/version-1.1-5B8CFF">
   <img alt="Size" src="https://img.shields.io/badge/app%20size-~1%20MB-2EA44F">
 </p>
 
@@ -48,7 +48,7 @@
 
 ### Download
 
-1. Download **[WindowSnapper-1.0.zip](https://github.com/samandrsn/WindowSnapper/releases/latest/download/WindowSnapper-1.0.zip)** from the [latest release](https://github.com/samandrsn/WindowSnapper/releases/latest).
+1. Download **[WindowSnapper.zip](https://github.com/samandrsn/WindowSnapper/releases/latest/download/WindowSnapper.zip)** from the [latest release](https://github.com/samandrsn/WindowSnapper/releases/latest).
 2. Unzip it and drag **WindowSnapper.app** into your **Applications** folder.
 3. Open it. macOS will say it can't verify the app, because WindowSnapper isn't notarized by Apple. Click **Done**, then go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to WindowSnapper. You only need to do this once.
 4. Allow **Accessibility** access when asked (**System Settings → Privacy & Security → Accessibility** → turn on WindowSnapper). That's what lets it move other apps' windows.
@@ -201,7 +201,7 @@ This works when WindowSnapper isn't already running.
 ```bash
 swift test                # geometry, cycling, drag zones and window-matching tests
 ./build.sh                # builds build/WindowSnapper.app
-./build.sh --release      # universal, ad-hoc signed build zipped as build/WindowSnapper-<version>.zip
+./build.sh --release      # universal, ad-hoc signed build zipped as build/WindowSnapper.zip
 ```
 
 `build.sh` signs with your Apple Development certificate if you have one. macOS ties Accessibility access to the signature, so with a stable certificate you only grant it once. Otherwise it signs ad hoc.

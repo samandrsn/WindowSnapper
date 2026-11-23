@@ -44,7 +44,7 @@ final class Snapper {
             let visible = screens[current].visible
             if let filled = GapFill.target(for: frame, direction: direction,
                                            others: AX.otherWindowFrames(), screen: visible) {
-                AX.setFrame(window, filled)
+                AX.setFrame(window, filled, positionFirst: true)   // move, then grow
                 last = LastSnap(window: window, state: SnapState(), frame: AX.frame(of: window) ?? filled,
                                 time: Date(), gapFill: direction)
                 return

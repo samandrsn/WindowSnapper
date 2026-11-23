@@ -48,7 +48,9 @@ enum AX {
 
     // MARK: Moving windows
 
-    static func setFrame(_ window: AXUIElement, _ rect: CGRect) {
+    /// - positionFirst: move, then resize. Right when growing a window in place (e.g. filling a
+    ///   gap upward), where resizing first would be refused because it'd run off the screen.
+    static func setFrame(_ window: AXUIElement, _ rect: CGRect, positionFirst: Bool = false) {
         var pid: pid_t = 0
         AXUIElementGetPid(window, &pid)
         let app = AXUIElementCreateApplication(pid)
@@ -59,11 +61,32 @@ enum AX {
         if enhanced { AXUIElementSetAttributeValue(app, "AXEnhancedUserInterface" as CFString, kCFBooleanFalse) }
         defer { if enhanced { AXUIElementSetAttributeValue(app, "AXEnhancedUserInterface" as CFString, kCFBooleanTrue) } }
 
-        // size → position → size: the first resize lets a big window fit on a smaller target
-        // display, the second one fixes sizes the app clamped against the old display.
-        setSize(window, rect.size)
-        setPosition(window, rect.origin)
-        setSize(window, rect.size)
+        if positionFirst {
+            setPosition(window, rect.origin)
+            setSize(window, rect.size)
+        } else {
+            // size → position → size: the first resize lets a big window fit on a smaller target
+            // display, the second one fixes sizes the app clamped against the old display.
+            setSize(window, rect.size)
+            setPosition(window, rect.origin)
+            setSize(window, rect.size)
+        }
+
+        // Some apps (Chrome, Teams and other Electron apps) apply moves a beat late, so a resize
+        // that arrives too soon gets clamped against the old position. If the window clearly
+        // didn't end up where we asked, give it a moment and apply again. (Small differences are
+        // normal — e.g. Terminal sizes in whole characters — and aren't retried.)
+        for _ in 0..<4 {
+            guard let f = frame(of: window), isClearlyOff(f, rect) else { break }
+            usleep(40_000)
+            setPosition(window, rect.origin)
+            setSize(window, rect.size)
+        }
+    }
+
+    private static func isClearlyOff(_ a: CGRect, _ b: CGRect) -> Bool {
+        abs(a.minX - b.minX) > 12 || abs(a.minY - b.minY) > 12 ||
+            abs(a.width - b.width) > 24 || abs(a.height - b.height) > 24
     }
 
     /// Sets the frame, then fixes up apps that won't take that size (e.g. Outlook has a minimum

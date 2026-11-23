@@ -45,7 +45,19 @@
 
 ## Install
 
-WindowSnapper is built from source (it takes about a minute):
+### Download
+
+1. Download **[WindowSnapper-1.0.zip](https://github.com/samandrsn/WindowSnapper/releases/latest/download/WindowSnapper-1.0.zip)** from the [latest release](https://github.com/samandrsn/WindowSnapper/releases/latest).
+2. Unzip it and drag **WindowSnapper.app** into your **Applications** folder.
+3. Open it. macOS will say it can't verify the app, because WindowSnapper isn't notarized by Apple. Click **Done**, then go to **System Settings → Privacy & Security**, scroll down, and click **Open Anyway** next to WindowSnapper. You only need to do this once.
+4. Allow **Accessibility** access when asked (**System Settings → Privacy & Security → Accessibility** → turn on WindowSnapper). That's what lets it move other apps' windows.
+5. Turn on **Launch at login** in WindowSnapper's settings.
+
+The app is a universal build for Apple Silicon and Intel Macs running macOS 13 or later.
+
+> **Updating?** After replacing the app, macOS may need Accessibility switched off and on again for the new copy.
+
+### Build from source
 
 ```bash
 git clone https://github.com/samandrsn/WindowSnapper.git
@@ -54,8 +66,6 @@ cd WindowSnapper
 ```
 
 This builds the app, copies it to `/Applications` and opens it. You'll need the Xcode command line tools (`xcode-select --install`).
-
-On first launch, macOS asks for **Accessibility** access. Turn on WindowSnapper in **System Settings → Privacy & Security → Accessibility**. That's what lets it move other apps' windows. Then turn on **Launch at login** in WindowSnapper's settings.
 
 ## Keyboard snapping
 
@@ -185,8 +195,9 @@ This works when WindowSnapper isn't already running.
 ## Building from source
 
 ```bash
-swift test      # geometry, cycling, drag zones and window-matching tests
-./build.sh      # builds build/WindowSnapper.app
+swift test                # geometry, cycling, drag zones and window-matching tests
+./build.sh                # builds build/WindowSnapper.app
+./build.sh --release      # universal, ad-hoc signed build zipped as build/WindowSnapper-<version>.zip
 ```
 
 `build.sh` signs with your Apple Development certificate if you have one. macOS ties Accessibility access to the signature, so with a stable certificate you only grant it once. Otherwise it signs ad hoc.

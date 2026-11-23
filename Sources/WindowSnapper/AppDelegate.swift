@@ -108,6 +108,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             snapper.snap(dir)
         } else if action == .maximize {
             snapper.maximize()
+        } else if action == .fillGap {
+            snapper.fillGap()
         } else if let i = action.layoutIndex {
             let layouts = LayoutStore.shared.layouts
             guard layouts.indices.contains(i) else { NSSound.beep(); return }

@@ -193,43 +193,41 @@ final class DragZoneTests: XCTestCase {
 final class GapFillTests: XCTestCase {
     let screen = CGRect(x: 0, y: 39, width: 2056, height: 1290)
 
-    func testUpFillsGapToWindowAbove() {
+    func testFillsGapBetweenTopAndBottomWindows() {
         // Your screenshot: dashboard across the top, Teams across the bottom, wallpaper between.
         let dashboard = CGRect(x: 0, y: 39, width: 2056, height: 600)
         let teams = CGRect(x: 0, y: 1000, width: 2056, height: 329)
-        XCTAssertEqual(GapFill.target(for: teams, direction: .up, others: [dashboard], screen: screen),
+        XCTAssertEqual(GapFill.fill(teams, others: [dashboard], screen: screen),
                        CGRect(x: 0, y: 639, width: 2056, height: 690))
     }
 
-    func testLeftFillsMiddleGapOnUltrawide() {
+    func testFillsMiddleOfUltrawide() {
         let wide = CGRect(x: 0, y: 0, width: 5120, height: 1440)
         let leftApp = CGRect(x: 0, y: 0, width: 1700, height: 1440)
         let rightApp = CGRect(x: 3400, y: 0, width: 1720, height: 1440)
-        XCTAssertEqual(GapFill.target(for: rightApp, direction: .left, others: [leftApp], screen: wide),
+        XCTAssertEqual(GapFill.fill(rightApp, others: [leftApp], screen: wide),
                        CGRect(x: 1700, y: 0, width: 3420, height: 1440))
-        XCTAssertEqual(GapFill.target(for: leftApp, direction: .right, others: [rightApp], screen: wide),
-                       CGRect(x: 0, y: 0, width: 3400, height: 1440))
     }
 
-    func testNoGapToScreenEdgeOnly() {
-        // Nothing above: empty space up to the screen edge isn't a gap between windows.
-        let w = CGRect(x: 100, y: 600, width: 800, height: 400)
-        XCTAssertNil(GapFill.target(for: w, direction: .up, others: [], screen: screen))
+    func testSmallWindowFillsTheHoleItSitsIn() {
+        // Windows on the left and across the top; a small window in the empty bottom-right area.
+        let left = CGRect(x: 0, y: 39, width: 800, height: 1290)
+        let top = CGRect(x: 800, y: 39, width: 1256, height: 500)
+        let small = CGRect(x: 1200, y: 800, width: 400, height: 300)
+        XCTAssertEqual(GapFill.fill(small, others: [left, top], screen: screen),
+                       CGRect(x: 800, y: 539, width: 1256, height: 790))
     }
 
-    func testIgnoresTinyGapsAndWindowsNotLinedUp() {
-        let w = CGRect(x: 0, y: 700, width: 1000, height: 400)
-        let justAbove = CGRect(x: 0, y: 39, width: 1000, height: 650)       // 11pt gap
-        XCTAssertNil(GapFill.target(for: w, direction: .up, others: [justAbove], screen: screen))
-        let offToTheSide = CGRect(x: 1200, y: 39, width: 800, height: 300) // above, but not lined up
-        XCTAssertNil(GapFill.target(for: w, direction: .up, others: [offToTheSide], screen: screen))
+    func testNothingToFill() {
+        let full = screen
+        XCTAssertNil(GapFill.fill(full, others: [], screen: screen))
     }
 
     func testWindowBehindDoesNotBlock() {
-        // A big window behind us (overlapping, not "above") isn't in the way.
+        // A big window behind (overlapping, not beside) isn't in the way.
         let w = CGRect(x: 0, y: 1000, width: 2056, height: 329)
         let behind = CGRect(x: 0, y: 39, width: 2056, height: 1290)
         let top = CGRect(x: 0, y: 39, width: 2056, height: 500)
-        XCTAssertEqual(GapFill.target(for: w, direction: .up, others: [behind, top], screen: screen)?.minY, 539)
+        XCTAssertEqual(GapFill.fill(w, others: [behind, top], screen: screen)?.minY, 539)
     }
 }

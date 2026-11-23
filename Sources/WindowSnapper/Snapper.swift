@@ -3,8 +3,7 @@ import SnapCore
 
 /// Keyboard window snapping: ⌥⌘ + arrow cycles ½ → ⅓ → ¾ → ⅔ → next monitor.
 /// Two perpendicular arrows in quick succession make a corner. ⌥⌘ + right ⇧ maximizes.
-/// If there's empty space between the window and another window in that direction, the first
-/// press grows the window across that gap instead; pressing again starts the cycle at ½.
+/// ⌥⌘/ fills the gap: grows the window into the empty space around it.
 final class Snapper {
     /// Two arrows closer together than this count as one corner gesture.
     static let cornerWindow: TimeInterval = 0.25
@@ -15,7 +14,6 @@ final class Snapper {
         let state: SnapState
         let frame: CGRect   // the frame the window actually ended up with
         let time: Date
-        var gapFill: Direction? = nil   // set when this press filled a gap
     }
     private var last: LastSnap?
 
@@ -29,27 +27,13 @@ final class Snapper {
         // Continue from the last snap only if it's the same window and nobody moved it since.
         var previous: SnapState?
         var quick = false
-        var justFilledThisWay = false
         if let last, CFEqual(last.window, window), SnapMath.approximatelyEqual(last.frame, frame) {
             previous = last.state
             quick = Date().timeIntervalSince(last.time) < Self.cornerWindow
-            justFilledThisWay = last.gapFill == direction
         }
 
         let t = SnapMath.transition(from: previous, pressing: direction, quick: quick)
 
-        // Fill the gap first: only when this press would start a fresh cycle that way (not
-        // continuing one or making a corner), and we didn't just fill a gap in this direction.
-        if t.state == .plain(direction) && !t.moveToNextScreen && !justFilledThisWay {
-            let visible = screens[current].visible
-            if let filled = GapFill.target(for: frame, direction: direction,
-                                           others: AX.otherWindowFrames(), screen: visible) {
-                AX.setFrame(window, filled, positionFirst: true)   // move, then grow
-                last = LastSnap(window: window, state: SnapState(), frame: AX.frame(of: window) ?? filled,
-                                time: Date(), gapFill: direction)
-                return
-            }
-        }
         var screenIndex = current
         if t.moveToNextScreen {
             // No other monitor → just start the cycle over on this one.
@@ -77,6 +61,20 @@ final class Snapper {
                                  anchorRight: state.horizontal?.direction == .right,
                                  anchorBottom: state.vertical?.direction == .down)
         last = LastSnap(window: window, state: state, frame: actual, time: .distantPast)
+    }
+
+    /// Grow the focused window into the empty space around it, up to neighbouring windows and the
+    /// screen edges. Beeps if there's nowhere to grow.
+    func fillGap() {
+        guard AX.isTrusted else { AX.promptForTrust(); return }
+        guard let window = AX.focusedWindow(), let frame = AX.frame(of: window) else { NSSound.beep(); return }
+        let screens = LiveScreen.all()
+        guard let i = SnapMath.bestScreen(for: frame, screens: screens.map(\.frame)),
+              let target = GapFill.fill(frame, others: AX.otherWindowFrames(), screen: screens[i].visible) else {
+            NSSound.beep(); return
+        }
+        AX.setFrame(window, target, positionFirst: true)   // move, then grow
+        last = nil
     }
 
     /// Fill the current display (not macOS full screen).

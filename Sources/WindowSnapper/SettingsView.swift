@@ -140,7 +140,7 @@ struct ShortcutsSettingsView: View {
     @ObservedObject var settings = Settings.shared
     @StateObject private var recorder = ShortcutRecorder()
 
-    private let snapActions: [ShortcutAction] = [.snapLeft, .snapRight, .snapUp, .snapDown, .maximize]
+    private let snapActions: [ShortcutAction] = [.snapLeft, .snapRight, .snapUp, .snapDown, .maximize, .fillGap]
     private let layoutActions = ShortcutAction.allCases.filter { $0.layoutIndex != nil }
 
     var body: some View {

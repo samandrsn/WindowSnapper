@@ -4,7 +4,7 @@ import SnapCore
 
 /// Everything a shortcut can trigger.
 enum ShortcutAction: String, CaseIterable, Codable, Identifiable {
-    case snapLeft, snapRight, snapUp, snapDown, maximize
+    case snapLeft, snapRight, snapUp, snapDown, maximize, fillGap
     case layout1, layout2, layout3, layout4, layout5, layout6, layout7, layout8, layout9
 
     var id: String { rawValue }
@@ -16,6 +16,7 @@ enum ShortcutAction: String, CaseIterable, Codable, Identifiable {
         case .snapUp: return "Snap up"
         case .snapDown: return "Snap down"
         case .maximize: return "Maximize"
+        case .fillGap: return "Fill the gap"
         default: return "Restore layout \(layoutIndex! + 1)"
         }
     }
@@ -82,6 +83,7 @@ struct Shortcut: Codable, Equatable {
             .maximize: Shortcut(keyCode: UInt16(kVK_RightShift),
                                 modifiers: NSEvent.ModifierFlags([.command, .option, .shift]).rawValue,
                                 label: "Right ⇧", modifierOnly: true),
+            .fillGap: Shortcut(keyCode: UInt16(kVK_ANSI_Slash), modifiers: cmdOpt, label: "/"),
         ]
         let digits = [kVK_ANSI_1, kVK_ANSI_2, kVK_ANSI_3, kVK_ANSI_4, kVK_ANSI_5,
                       kVK_ANSI_6, kVK_ANSI_7, kVK_ANSI_8, kVK_ANSI_9]
